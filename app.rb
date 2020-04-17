@@ -1,11 +1,14 @@
 # encoding: utf-8
 require "sinatra"
+require "sinatra/reloader" if development?
 require "json"
 require "httparty"
 require "redis"
 require "dotenv"
 require "text"
 require "sanitize"
+require "pry-remote"
+require "./services/auth_service"
 
 configure do
   # Load .env vars
@@ -17,6 +20,7 @@ configure do
   case settings.environment
   when :development
     uri = URI.parse(ENV["LOCAL_REDIS_URL"])
+    puts uri
   when :production
     uri = URI.parse(ENV["REDISCLOUD_URL"])
   end
@@ -37,38 +41,60 @@ end
 # trigger_word=trebekbot
 # 
 post "/" do
-  begin
-    puts "[LOG] #{params}"
-    params[:text] = params[:text].sub(params[:trigger_word], "").strip 
-    if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
-      response = "Invalid token"
-    elsif is_channel_blacklisted?(params[:channel_name])
-      response = "Sorry, can't play in this channel."
-    elsif params[:text].match(/^jeopardy me/i)
-      response = respond_with_question(params)
-    elsif params[:text].match(/my score$/i)
-      response = respond_with_user_score(params[:user_id])
-    elsif params[:text].match(/^help$/i)
-      response = respond_with_help
-    elsif params[:text].match(/^show (me\s+)?(the\s+)?leaderboard$/i)
-      response = respond_with_leaderboard
-    elsif params[:text].match(/^show (me\s+)?(the\s+)?loserboard$/i)
-      response = respond_with_loserboard
+  raw_body = request.body.read
+  timestamp = request.env["HTTP_X_SLACK_REQUEST_TIMESTAMP"]
+  signature = request.env["HTTP_X_SLACK_SIGNATURE"]
+  development_token = request.env["HTTP_DEVELOPMENT_API_TOKEN"]
+  parsed_body = JSON.parse(raw_body)
+
+  if timestamp && signature && parsed_body["type"] == "url_verification"
+    if AuthService.verify_signature(timestamp, signature, raw_body)
+      status 200
+      response = { challenge: parsed_body["challenge"]}
+      body response.to_json
     else
-      response = process_answer(params)
+      puts "no bueno"
     end
-  rescue => e
-    puts "[ERROR] #{e}"
-    response = ""
+  elsif development_token == ENV["DEVELOPMENT_API_TOKEN"]
+    puts "no need to validate"
   end
+
+  puts "[LOG] #{raw_body}"
+  base_uri = ENV["INCOMING_WEBHOOK_URL"]
+  HTTParty.post(base_uri, body: {"text": "I got the message y'all"} )
+  # begin
+  #   puts "[LOG] #{params}"
+  #   params[:text] = params[:text].sub(params[:trigger_word], "").strip 
+  #   if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
+  #     response = "Invalid token"
+  #   elsif is_channel_blacklisted?(params[:channel_name])
+  #     response = "Sorry, can't play in this channel."
+  #   elsif params[:text].match(/^jeopardy me/i)
+  #     response = respond_with_question(params)
+  #   elsif params[:text].match(/my score$/i)
+  #     response = respond_with_user_score(params[:user_id])
+  #   elsif params[:text].match(/^help$/i)
+  #     response = respond_with_help
+  #   elsif params[:text].match(/^show (me\s+)?(the\s+)?leaderboard$/i)
+  #     response = respond_with_leaderboard
+  #   elsif params[:text].match(/^show (me\s+)?(the\s+)?loserboard$/i)
+  #     response = respond_with_loserboard
+  #   else
+  #     response = process_answer(params)
+  #   end
+  # rescue => e
+  #   puts "[ERROR] #{e}"
+  #   response = ""
+  # end
   status 200
-  body json_response_for_slack(response)
+  response = { text: "aw dammit"}
+  body response.to_json
 end
 
 # Puts together the json payload that needs to be sent back to Slack
 # 
 def json_response_for_slack(reply)
-  response = { text: reply, link_names: 1 }
+  response = { challenge: ENV["SLACK_APP_CHALLENGE"], text: reply, link_names: 1 }
   response[:username] = ENV["BOT_USERNAME"] unless ENV["BOT_USERNAME"].nil?
   response[:icon_emoji] = ENV["BOT_ICON"] unless ENV["BOT_ICON"].nil?
   response.to_json

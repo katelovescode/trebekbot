@@ -1,50 +1,23 @@
 {
   "name": "trebekbot",
   "description": "A Jeopardy! bot for Slack.",
-  "keywords": [
-    "slack",
-    "bot",
-    "jeopardy"
-  ],
+  "keywords": ["slack", "bot", "jeopardy"],
   "repository": "https://github.com/gesteves/trebekbot",
-  "addons": [
-    "rediscloud",
-    "papertrail"
-  ],
+  "addons": ["rediscloud", "papertrail"],
   "success_url": "https://github.com/gesteves/trebekbot#usage",
   "env": {
-    "OUTGOING_WEBHOOK_TOKEN": {
-      "description": "The token of the Slack outgoing webhook you'll use for this. Set it up at https://slack.com/services/new/outgoing-webhook. You'll have to point it to this app's URL once it's deployed.",
+    "BOT_TOKEN": {
+      "description": "Your bot's OAuth Token, available in Features > OAuth & Permissions > OAuth Tokens & Redirect URLs > Tokens for Your Workspace (Bot User OAuth Access Token)",
       "required": true
     },
-    "API_TOKEN": {
-      "description": "The Slack API key. Get it at https://api.slack.com/web",
+    "SLACK_APP_VERSION": {
+      "description": "Slack App version number; right now all slack apps are v0",
+      "required": true,
+      "value": "v0"
+    },
+    "SLACK_APP_SIGNING_SECRET": {
+      "description": "Slack App Signing Secret, available in Settings > Basic Information > App Credentials (Signing Secret)",
       "required": true
-    },
-    "BOT_USERNAME": {
-      "description": "The trigger word you set for the outgoing webhook.",
-      "required": true,
-      "value": "trebekbot"
-    },
-    "SIMILARITY_THRESHOLD": {
-      "description": "From 0 to 1, how similar user answers need to be to the actual answer to be accepted. 1 means exact match; lower values give users some margin for error (e.g typos) but could cause false positives.",
-      "required": true,
-      "value": "0.5"
-    },
-    "SECONDS_TO_ANSWER": {
-      "description": "Time, in seconds, users have to answer each round.",
-      "required": true,
-      "value": "30"
-    },
-    "CHANNEL_BLACKLIST": {
-      "description": "Comma-separated list of channel names in which this bot is not allowed to respond",
-      "required": false,
-      "value": "general"
-    },
-    "QUESTION_SUBSTRING_BLACKLIST": {
-      "description": "Comma-separated list of strings which indicate a question containing any of these should be ignored.",
-      "required": false,
-      "value": "seen here,[audio clue]"
     }
   }
 }

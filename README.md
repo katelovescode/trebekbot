@@ -10,7 +10,7 @@ You'll need a [Slack](https://slack.com) account, obviously, and a free [Heroku]
 
 ## Installation
 
-1. Set up a Slack outgoing webhook at https://slack.com/services/new/outgoing-webhook. Make sure to pick a trigger word, such as `trebekbot`. You might also want to set this up in a single room, if you value your team's productivity.
+1. [Create a new Slack app](https://api.slack.com/apps?new_app=1)
 
 2. Grab the token for the outgoing webhook you just created, and a Slack API token, which you can get from https://api.slack.com/web.
 
@@ -18,7 +18,7 @@ You'll need a [Slack](https://slack.com) account, obviously, and a free [Heroku]
 If you'd rather do it manually, then just clone this repo, set up a Heroku app with Redis Cloud (the free level is more than enough for this), and deploy trebekbot there. Make sure to set up the config variables in
 [.env.example](https://github.com/gesteves/trebekbot/blob/master/.env.example) in your Heroku app's settings screen.
 
-4. Point the outgoing webhook to https://[YOUR-HEROKU-APP].herokuapp.com
+4. In your Slack App, go to Interactivity and Shortcuts, and turn on Interactivity.  Paste your Heroku app URL in the Request URL box.
 
 ## Usage
 
