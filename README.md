@@ -35,7 +35,7 @@ Big thanks to [Steve Ottenad](https://github.com/sottenad) for building [jServic
 
 ## Contributing
 
-Feel free to open a new issue if you have questions, concerns, bugs, or feature requests. Just remember that I did this for fun, for free, in my free time, and I may not be able to help you, respond in a timely manner, or implement any feature requests.
+Feel free to open a new issue if you have questions, concerns, bugs or feature requests. Just remember that I did this for fun, for free, in my free time, and I may not be able to help you, respond in a timely manner, or implement any feature requests.
 
 ## License 
 
