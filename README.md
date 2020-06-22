@@ -1,6 +1,6 @@
 # trebekbot
 
-A Jeopardy! bot for Slack, powered by the [jService](http://jservice.io/) API. Sets up a perpetual game of Jeorpardy! in your Slack channels.
+A Jeopardy! bot for Slack, powered by the [jService](http://jservice.io/) API. Sets up a perpetual game of Jeopardy! in your Slack channels.
 
 ![](http://i.imgur.com/BjMDf6Z.png)
 
