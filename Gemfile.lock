@@ -34,7 +34,7 @@ GEM
     pry-remote (0.1.8)
       pry (~> 0.9)
       slop (~> 3.0)
-    rack (2.2.2)
+    rack (2.2.3)
     rack-protection (2.0.8.1)
       rack
     rainbow (3.0.0)
